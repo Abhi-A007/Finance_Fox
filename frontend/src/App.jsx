@@ -6,6 +6,7 @@ import SignupPage from './pages/SignupPage';
 import Dashboard from './pages/Dashboard';
 import ExpensePage from './pages/ExpensePage';
 import BudgetPage from './pages/BudgetPage';
+import CalculatorsPage from './pages/CalculatorsPage';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/expenses" element={<ExpensePage />} />
         <Route path="/budget" element={<BudgetPage />} />
+        <Route path="/calculators" element={<CalculatorsPage />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>

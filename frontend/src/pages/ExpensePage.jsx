@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   List, 
   Bell, 
@@ -26,23 +26,52 @@ const SidebarItem = ({ icon: Icon, label, active, dotColor, onClick }) => (
 
 const ExpensePage = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const [now, setNow] = useState(new Date());
+  const profileRef = useRef(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
   
   const [savedTemplates, setSavedTemplates] = useState([]);
-  const [activeTemplateId, setActiveTemplateId] = useState('');
-  const [activeCategoryId, setActiveCategoryId] = useState('');
+  const [activeTemplateId, setActiveTemplateId] = useState(() => {
+    const saved = localStorage.getItem('activeTemplateId');
+    return saved ? JSON.parse(saved) : '';
+  });
+  const [activeCategoryId, setActiveCategoryId] = useState(() => {
+    const saved = localStorage.getItem('activeCategoryId');
+    return saved ? JSON.parse(saved) : '';
+  });
 
   const [templateDropdownOpen, setTemplateDropdownOpen] = useState(false);
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
 
   useEffect(() => {
-    const handleOutsideClick = () => {
+    const handleOutsideClick = (e) => {
       setTemplateDropdownOpen(false);
       setCategoryDropdownOpen(false);
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setProfileDropdownOpen(false);
+      }
     };
     window.addEventListener('click', handleOutsideClick);
     return () => window.removeEventListener('click', handleOutsideClick);
   }, []);
+
+  useEffect(() => {
+    if (activeTemplateId !== '') {
+      localStorage.setItem('activeTemplateId', JSON.stringify(activeTemplateId));
+    }
+  }, [activeTemplateId]);
+
+  useEffect(() => {
+    if (activeCategoryId !== '') {
+      localStorage.setItem('activeCategoryId', JSON.stringify(activeCategoryId));
+    }
+  }, [activeCategoryId]);
 
   const toggleTemplateDropdown = (e) => {
     e.stopPropagation();
@@ -63,7 +92,10 @@ const ExpensePage = () => {
         if (response.ok) {
           const data = await response.json();
           setSavedTemplates(data);
-          if (data.length > 0) {
+          // Only set defaults if no previous selection is saved
+          const savedTplId = localStorage.getItem('activeTemplateId');
+          const savedCatId = localStorage.getItem('activeCategoryId');
+          if (!savedTplId && data.length > 0) {
             const defaultTemp = data[0];
             setActiveTemplateId(defaultTemp.id);
             if (defaultTemp.categories && defaultTemp.categories.length > 0) {
@@ -83,7 +115,9 @@ const ExpensePage = () => {
         try {
           const parsed = JSON.parse(saved);
           setSavedTemplates(parsed);
-          if (parsed.length > 0) {
+          // Only set defaults if no previous selection is saved
+          const savedTplId = localStorage.getItem('activeTemplateId');
+          if (!savedTplId && parsed.length > 0) {
             const defaultTemp = parsed[0];
             setActiveTemplateId(defaultTemp.id);
             if (defaultTemp.categories && defaultTemp.categories.length > 0) {
@@ -249,9 +283,7 @@ const ExpensePage = () => {
           <div>
             <h4 className="text-[10px] font-bold text-textMuted uppercase tracking-wider mb-3 px-2">Tools</h4>
             <div className="space-y-1">
-              <SidebarItem dotColor="bg-gray-200" label="Calculators" />
-              <SidebarItem dotColor="bg-gray-200" label="Profile" />
-              <SidebarItem dotColor="bg-gray-200" label="Settings" />
+              <SidebarItem dotColor="bg-gray-200" label="Calculators" onClick={() => navigate('/calculators')} />
             </div>
           </div>
         </div>
@@ -269,15 +301,42 @@ const ExpensePage = () => {
           </div>
           
           <div className="flex items-center gap-4">
-            <button className="px-4 py-1.5 rounded-full border border-borderLight text-sm font-medium text-textDark hover:bg-gray-50 flex items-center gap-2">
-              <Calendar size={14} /> {currentMonth}
+            <button className="px-4 py-1.5 rounded-full border border-borderLight text-sm font-medium text-textDark hover:bg-gray-50 flex items-center gap-2 tabular-nums">
+              <Calendar size={14} className="shrink-0" />
+              <span>{now.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}</span>
+              <span className="text-primary font-bold">{now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true })}</span>
             </button>
             <button className="w-8 h-8 rounded-full border border-borderLight flex items-center justify-center text-textMuted hover:bg-gray-50 relative">
               <Bell size={16} />
               <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-primary rounded-full"></span>
             </button>
-            <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold shadow-sm">
-              TD
+            <div className="relative" ref={profileRef}>
+              <button
+                onClick={(e) => { e.stopPropagation(); setProfileDropdownOpen(!profileDropdownOpen); }}
+                className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold shadow-sm hover:bg-orange-600 transition-colors cursor-pointer"
+              >
+                TD
+              </button>
+              {profileDropdownOpen && (
+                <div
+                  className="absolute right-0 top-full mt-2 w-44 bg-white border border-borderLight rounded-xl shadow-xl py-1.5 z-50 animate-fadeIn"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <button
+                    className="w-full text-left px-4 py-2.5 text-xs font-semibold text-darkNavy hover:bg-slate-50 transition-colors flex items-center gap-2"
+                    onClick={() => setProfileDropdownOpen(false)}
+                  >
+                    <span>Profile Settings</span>
+                  </button>
+                  <div className="mx-3 my-1 border-t border-gray-100" />
+                  <button
+                    className="w-full text-left px-4 py-2.5 text-xs font-semibold text-primary hover:bg-orange-50 transition-colors flex items-center gap-2"
+                    onClick={() => setProfileDropdownOpen(false)}
+                  >
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </header>
