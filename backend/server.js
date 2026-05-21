@@ -96,6 +96,13 @@ app.delete('/api/templates/:id', (req, res) => {
     const filePath = path.join(TEMPLATES_DIR, fileName);
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);
+      
+      // Clean up corresponding template stocks if they exist
+      const stocksFilePath = path.join(TEMPLATES_DIR, 'stocks', `stocks-${id}.json`);
+      if (fs.existsSync(stocksFilePath)) {
+        fs.unlinkSync(stocksFilePath);
+      }
+      
       res.json({ message: 'Template deleted successfully' });
     } else {
       res.status(404).json({ error: 'Template not found' });
@@ -103,6 +110,50 @@ app.delete('/api/templates/:id', (req, res) => {
   } catch (error) {
     console.error('Error deleting template:', error);
     res.status(500).json({ error: 'Failed to delete template' });
+  }
+});
+
+// Stocks subfolder setup
+const STOCKS_DIR = path.join(TEMPLATES_DIR, 'stocks');
+
+// Ensure Stocks folder exists
+if (!fs.existsSync(STOCKS_DIR)) {
+  fs.mkdirSync(STOCKS_DIR, { recursive: true });
+}
+
+// GET stocks for a template
+app.get('/api/stocks/:templateId', (req, res) => {
+  try {
+    const { templateId } = req.params;
+    const fileName = `stocks-${templateId}.json`;
+    const filePath = path.join(STOCKS_DIR, fileName);
+    if (fs.existsSync(filePath)) {
+      const data = fs.readFileSync(filePath, 'utf8');
+      res.json(JSON.parse(data));
+    } else {
+      res.json([]);
+    }
+  } catch (error) {
+    console.error('Error reading stocks for template:', error);
+    res.status(500).json({ error: 'Failed to read stocks' });
+  }
+});
+
+// POST save stocks for a template
+app.post('/api/stocks/:templateId', (req, res) => {
+  try {
+    const { templateId } = req.params;
+    const stocksList = req.body;
+    if (!Array.isArray(stocksList)) {
+      return res.status(400).json({ error: 'Invalid stocks data' });
+    }
+    const fileName = `stocks-${templateId}.json`;
+    const filePath = path.join(STOCKS_DIR, fileName);
+    fs.writeFileSync(filePath, JSON.stringify(stocksList, null, 2), 'utf8');
+    res.json({ message: 'Stocks saved successfully', stocksList });
+  } catch (error) {
+    console.error('Error saving stocks for template:', error);
+    res.status(500).json({ error: 'Failed to save stocks' });
   }
 });
 

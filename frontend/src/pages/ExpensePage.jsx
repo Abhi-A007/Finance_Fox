@@ -276,7 +276,7 @@ const ExpensePage = () => {
               <SidebarItem dotColor="bg-gray-200" label="Overview" onClick={() => navigate('/dashboard')} />
               <SidebarItem dotColor="bg-primary" label="Expenses" active />
               <SidebarItem dotColor="bg-gray-200" label="Budget" onClick={() => navigate('/budget')} />
-              <SidebarItem dotColor="bg-gray-200" label="Stocks" />
+              <SidebarItem dotColor="bg-gray-200" label="Stocks" onClick={() => navigate('/stocks')} />
             </div>
           </div>
 
@@ -529,13 +529,19 @@ const ExpensePage = () => {
                         <div className="font-semibold text-textDark">{expense.name}</div>
                         <div className="flex items-center gap-4">
                           <span className="font-bold text-darkNavy">₹{expense.amount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-                          <button 
-                            onClick={() => removeExpense(expense.id)}
-                            className="text-gray-400 hover:text-danger p-1.5 rounded-lg hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
-                            aria-label="Remove expense"
-                          >
-                            <Trash2 size={16} />
-                          </button>
+                          {expense.isStock ? (
+                            <span className="text-[10px] bg-purple-50 text-purple-600 border border-purple-200 px-2.5 py-1 rounded-lg font-bold select-none whitespace-nowrap">
+                              Stock Asset
+                            </span>
+                          ) : (
+                            <button 
+                              onClick={() => removeExpense(expense.id)}
+                              className="text-gray-400 hover:text-danger p-1.5 rounded-lg hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
+                              aria-label="Remove expense"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          )}
                         </div>
                       </div>
                     ))}

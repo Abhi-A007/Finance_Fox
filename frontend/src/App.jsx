@@ -8,6 +8,7 @@ import ExpensePage from './pages/ExpensePage';
 import BudgetPage from './pages/BudgetPage';
 import CalculatorsPage from './pages/CalculatorsPage';
 import EMITrackerPage from './pages/EMITrackerPage';
+import StocksPage from './pages/StocksPage';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/budget" element={<BudgetPage />} />
         <Route path="/calculators" element={<CalculatorsPage />} />
         <Route path="/emitracker" element={<EMITrackerPage />} />
+        <Route path="/stocks" element={<StocksPage />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>

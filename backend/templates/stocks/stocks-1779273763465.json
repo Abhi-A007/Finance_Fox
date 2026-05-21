@@ -1,0 +1,16 @@
+[
+  {
+    "symbol": "LT",
+    "name": "Larsen & Toubro Limited",
+    "price": 3450,
+    "sector": "Telecom",
+    "quantity": 1
+  },
+  {
+    "symbol": "SUNPHARMA",
+    "name": "Sun Pharmaceutical",
+    "price": 1520,
+    "sector": "Healthcare",
+    "quantity": 1
+  }
+]

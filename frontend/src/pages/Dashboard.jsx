@@ -125,7 +125,7 @@ const Dashboard = () => {
               <SidebarItem dotColor="bg-primary" label="Overview" active />
               <SidebarItem dotColor="bg-gray-200" label="Expenses" onClick={() => navigate('/expenses')} />
               <SidebarItem dotColor="bg-gray-200" label="Budget" onClick={() => navigate('/budget')} />
-              <SidebarItem dotColor="bg-gray-200" label="Stocks" />
+              <SidebarItem dotColor="bg-gray-200" label="Stocks" onClick={() => navigate('/stocks')} />
             </div>
           </div>
 

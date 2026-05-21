@@ -411,7 +411,7 @@ const BudgetPage = () => {
               <SidebarItem dotColor="bg-gray-200" label="Overview" onClick={() => navigate('/dashboard')} />
               <SidebarItem dotColor="bg-gray-200" label="Expenses" onClick={() => navigate('/expenses')} />
               <SidebarItem dotColor="bg-primary" label="Budget" active />
-              <SidebarItem dotColor="bg-gray-200" label="Stocks" />
+              <SidebarItem dotColor="bg-gray-200" label="Stocks" onClick={() => navigate('/stocks')} />
             </div>
           </div>
 
