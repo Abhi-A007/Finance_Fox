@@ -10,6 +10,14 @@ import CalculatorsPage from './pages/CalculatorsPage';
 import EMITrackerPage from './pages/EMITrackerPage';
 import StocksPage from './pages/StocksPage';
 
+const ProtectedRoute = ({ children }) => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+};
+
 function App() {
   return (
     <Router>
@@ -17,13 +25,15 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
-        {/* Protected Route Placeholder */}
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/expenses" element={<ExpensePage />} />
-        <Route path="/budget" element={<BudgetPage />} />
-        <Route path="/calculators" element={<CalculatorsPage />} />
-        <Route path="/emitracker" element={<EMITrackerPage />} />
-        <Route path="/stocks" element={<StocksPage />} />
+        
+        {/* Protected Routes */}
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/expenses" element={<ProtectedRoute><ExpensePage /></ProtectedRoute>} />
+        <Route path="/budget" element={<ProtectedRoute><BudgetPage /></ProtectedRoute>} />
+        <Route path="/calculators" element={<ProtectedRoute><CalculatorsPage /></ProtectedRoute>} />
+        <Route path="/emitracker" element={<ProtectedRoute><EMITrackerPage /></ProtectedRoute>} />
+        <Route path="/stocks" element={<ProtectedRoute><StocksPage /></ProtectedRoute>} />
+        
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>

@@ -8,6 +8,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const validate = () => {
     const newErrors = {};
@@ -25,12 +26,38 @@ const LoginPage = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validate()) {
-      // Mock login process
-      console.log('Login successful', formData);
-      navigate('/dashboard');
+      setIsLoading(true);
+      try {
+        const response = await fetch('http://localhost:5000/api/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            password: formData.password,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          console.log('Login successful', data);
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+          navigate('/dashboard');
+        } else {
+          setErrors({ submit: data.error || 'Login failed' });
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        setErrors({ submit: 'Failed to connect to backend server' });
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -50,6 +77,12 @@ const LoginPage = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
+          {errors.submit && (
+            <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-xl text-center">
+              {errors.submit}
+            </div>
+          )}
+
           <Input 
             icon={Mail}
             type="email" 
@@ -57,6 +90,7 @@ const LoginPage = () => {
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             error={errors.email}
+            disabled={isLoading}
           />
           
           <div className="space-y-2">
@@ -67,14 +101,15 @@ const LoginPage = () => {
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               error={errors.password}
+              disabled={isLoading}
             />
             <div className="flex justify-end">
               <a href="#" className="text-sm text-primary hover:text-orange-400">Forgot password?</a>
             </div>
           </div>
 
-          <Button type="submit" className="w-full mt-2">
-            Log in
+          <Button type="submit" className="w-full mt-2" disabled={isLoading}>
+            {isLoading ? 'Logging in...' : 'Log in'}
           </Button>
         </form>
 

@@ -86,8 +86,34 @@ const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [now, setNow] = useState(new Date());
+  const [userName, setUserName] = useState('User');
+  const [userInitials, setUserInitials] = useState('U');
   const profileRef = useRef(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        const parsed = JSON.parse(storedUser);
+        if (parsed && parsed.name) {
+          setUserName(parsed.name.split(' ')[0]);
+          const nameParts = parsed.name.trim().split(/\s+/);
+          const initials = nameParts.map(p => p[0]).join('').substring(0, 2).toUpperCase();
+          setUserInitials(initials || 'U');
+        }
+      } catch (e) {
+        console.error('Error parsing stored user:', e);
+      }
+    }
+  }, []);
+
+  const handleSignOut = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setProfileDropdownOpen(false);
+    navigate('/login');
+  };
 
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 1000);
@@ -171,7 +197,7 @@ const Dashboard = () => {
                 onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                 className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold shadow-sm hover:bg-orange-600 transition-colors cursor-pointer"
               >
-                TD
+                {userInitials}
               </button>
               {profileDropdownOpen && (
                 <div className="absolute right-0 top-full mt-2 w-44 bg-white border border-borderLight rounded-xl shadow-xl py-1.5 z-50 animate-fadeIn">
@@ -184,7 +210,7 @@ const Dashboard = () => {
                   <div className="mx-3 my-1 border-t border-gray-100" />
                   <button
                     className="w-full text-left px-4 py-2.5 text-xs font-semibold text-primary hover:bg-orange-50 transition-colors flex items-center gap-2"
-                    onClick={() => setProfileDropdownOpen(false)}
+                    onClick={handleSignOut}
                   >
                     <span>Sign Out</span>
                   </button>
@@ -199,7 +225,7 @@ const Dashboard = () => {
           <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
             <div>
               <h2 className="text-2xl font-bold mb-1">
-                {now.getHours() < 12 ? 'Good morning' : now.getHours() < 17 ? 'Good afternoon' : 'Good evening'}, Tuhin 👋
+                {now.getHours() < 12 ? 'Good morning' : now.getHours() < 17 ? 'Good afternoon' : 'Good evening'}, {userName} 👋
               </h2>
               <p className="text-textMuted text-sm">
                 {now.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })} — {now.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })} — Your finances look healthy overall
