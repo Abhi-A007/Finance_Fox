@@ -8,6 +8,7 @@ const SignupPage = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
   const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const validate = () => {
     const newErrors = {};
@@ -31,12 +32,39 @@ const SignupPage = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validate()) {
-      // Mock signup process
-      console.log('Signup successful', formData);
-      navigate('/dashboard');
+      setIsLoading(true);
+      try {
+        const response = await fetch('http://localhost:5000/api/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            password: formData.password,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          console.log('Signup successful', data);
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+          navigate('/dashboard');
+        } else {
+          setErrors({ submit: data.error || 'Signup failed' });
+        }
+      } catch (error) {
+        console.error('Signup error:', error);
+        setErrors({ submit: 'Failed to connect to backend server' });
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -56,6 +84,12 @@ const SignupPage = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {errors.submit && (
+            <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-xl text-center">
+              {errors.submit}
+            </div>
+          )}
+
           <Input 
             icon={User}
             type="text" 
@@ -63,6 +97,7 @@ const SignupPage = () => {
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             error={errors.name}
+            disabled={isLoading}
           />
           
           <Input 
@@ -72,6 +107,7 @@ const SignupPage = () => {
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             error={errors.email}
+            disabled={isLoading}
           />
           
           <Input 
@@ -81,6 +117,7 @@ const SignupPage = () => {
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             error={errors.password}
+            disabled={isLoading}
           />
 
           <Input 
@@ -90,10 +127,11 @@ const SignupPage = () => {
             value={formData.confirmPassword}
             onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
             error={errors.confirmPassword}
+            disabled={isLoading}
           />
 
-          <Button type="submit" className="w-full mt-4">
-            Sign up
+          <Button type="submit" className="w-full mt-4" disabled={isLoading}>
+            {isLoading ? 'Signing up...' : 'Sign up'}
           </Button>
         </form>
 
