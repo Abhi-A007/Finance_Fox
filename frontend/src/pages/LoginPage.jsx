@@ -69,9 +69,7 @@ const LoginPage = () => {
       
       <div className="w-full max-w-md bg-card/50 p-8 rounded-3xl border border-slate-800 shadow-2xl backdrop-blur-sm">
         <div className="flex flex-col items-center mb-8">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center mb-4 shadow-lg shadow-orange-500/20">
-            <BarChart3 size={24} className="text-white" />
-          </div>
+          <img src="/logo.png" alt="Finance Fox Logo" className="w-12 h-12 object-contain mb-4" />
           <h2 className="text-3xl font-bold tracking-tight text-[#0B1120]">Welcome back</h2>
           <p className="text-[#0B1120] mt-2">Enter your credentials to access your account</p>
         </div>

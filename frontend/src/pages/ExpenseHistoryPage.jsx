@@ -510,9 +510,7 @@ const ExpenseHistoryPage = () => {
       {/* Sidebar */}
       <aside className={`fixed md:sticky top-0 left-0 h-screen w-64 bg-white border-r border-borderLight flex flex-col z-30 transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
         <div className="flex items-center gap-3 px-6 py-6 border-b border-borderLight h-16 box-border cursor-pointer" onClick={() => navigate('/dashboard')}>
-          <div className="w-8 h-8 rounded bg-darkNavy flex items-center justify-center relative overflow-hidden">
-            <span className="text-primary font-bold text-lg z-10">₹</span>
-          </div>
+          <img src="/logo.png" alt="Finance Fox Logo" className="w-8 h-8 object-contain" />
           <div className="flex flex-col">
             <span className="text-primary text-[10px] font-bold leading-tight tracking-wider uppercase">Finance</span>
             <span className="text-darkNavy font-bold leading-tight">FOX</span>

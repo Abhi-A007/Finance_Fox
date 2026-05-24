@@ -98,7 +98,7 @@ const Dashboard = () => {
   const [chatInput, setChatInput] = useState('');
   const [aiTyping, setAiTyping] = useState(false);
   const [openReasoningIndex, setOpenReasoningIndex] = useState(null);
-  const chatBottomRef = useRef(null);
+  const chatContainerRef = useRef(null);
 
   const suggestionChips = [
     "Can I buy a tablet for ₹15,000?",
@@ -108,7 +108,12 @@ const Dashboard = () => {
   ];
 
   useEffect(() => {
-    chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
   }, [chatHistory, aiTyping]);
 
   const toggleReasoning = (index) => {
@@ -218,9 +223,7 @@ const Dashboard = () => {
       {/* Sidebar */}
       <aside className={`fixed md:sticky top-0 left-0 h-screen w-64 bg-white border-r border-borderLight flex flex-col z-30 transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
         <div className="flex items-center gap-3 px-6 py-6 border-b border-borderLight h-16 box-border">
-          <div className="w-8 h-8 rounded bg-darkNavy flex items-center justify-center relative overflow-hidden">
-            <span className="text-primary font-bold text-lg z-10">₹</span>
-          </div>
+          <img src="/logo.png" alt="Finance Fox Logo" className="w-8 h-8 object-contain" />
           <div className="flex flex-col">
             <span className="text-primary text-[10px] font-bold leading-tight tracking-wider uppercase">Finance</span>
             <span className="text-darkNavy font-bold leading-tight">FOX</span>
@@ -629,7 +632,7 @@ const Dashboard = () => {
               </div>
               
               {/* Chat Messages */}
-              <div className="flex-1 overflow-y-auto space-y-3 mb-3 pr-1 text-xs no-scrollbar">
+              <div ref={chatContainerRef} className="flex-1 overflow-y-auto space-y-3 mb-3 pr-1 text-xs no-scrollbar">
                 {chatHistory.map((msg, index) => (
                   <div key={index} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
                     <div className={`p-2.5 rounded-xl max-w-[85%] leading-relaxed ${msg.role === 'user' ? 'bg-primary text-white rounded-tr-none font-medium' : 'bg-gray-150 text-textDark rounded-tl-none font-medium'}`} style={msg.role === 'user' ? {} : { backgroundColor: '#f1f5f9' }}>
@@ -752,7 +755,7 @@ const Dashboard = () => {
                     <span className="w-1.5 h-1.5 rounded-full bg-current animate-bounce [animation-delay:0.4s]" />
                   </div>
                 )}
-                <div ref={chatBottomRef} />
+                {/* Scroll handled internally via chatContainerRef */}
               </div>
 
               {/* Suggestion Chips */}
