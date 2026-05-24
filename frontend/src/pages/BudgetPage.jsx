@@ -65,13 +65,13 @@ const CategoryRow = ({
 
   useEffect(() => {
     if (!isAmountFocused) {
-      setLocalAmount(parseFloat(amount.toFixed(4)).toString());
+      setLocalAmount(parseFloat(amount.toFixed(2)).toString());
     }
   }, [amount, isAmountFocused]);
 
   useEffect(() => {
     if (!isPercentFocused) {
-      setLocalPercent(parseFloat(cat.percentage.toFixed(4)).toString());
+      setLocalPercent(parseFloat(cat.percentage.toFixed(2)).toString());
     }
   }, [cat.percentage, isPercentFocused]);
 
@@ -139,7 +139,7 @@ const CategoryRow = ({
               onFocus={() => setIsAmountFocused(true)}
               onBlur={() => {
                 setIsAmountFocused(false);
-                setLocalAmount(parseFloat(amount.toFixed(4)).toString());
+                setLocalAmount(parseFloat(amount.toFixed(2)).toString());
               }}
               onWheel={(e) => e.target.blur()}
               className="w-24 sm:w-28 bg-white border border-gray-200 rounded-xl py-2 pl-7 pr-3 text-sm font-bold text-right focus:outline-none focus:border-primary shadow-sm text-darkNavy transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
@@ -158,9 +158,9 @@ const CategoryRow = ({
                 onChange={onPercentChange}
                 onFocus={() => setIsPercentFocused(true)}
                 onBlur={() => {
-                  setIsPercentFocused(false);
-                  setLocalPercent(parseFloat(cat.percentage.toFixed(4)).toString());
-                }}
+                   setIsPercentFocused(false);
+                   setLocalPercent(parseFloat(cat.percentage.toFixed(2)).toString());
+                 }}
                 onWheel={(e) => e.target.blur()}
                 className="w-20 bg-white border border-gray-200 rounded-xl py-2 pl-3 pr-7 text-sm font-bold text-center focus:outline-none focus:border-primary shadow-sm text-darkNavy transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 min="0" max="100"
@@ -414,7 +414,7 @@ const BudgetPage = () => {
   };
 
   const totalPercentage = categories.reduce((sum, cat) => sum + (parseFloat(cat.percentage) || 0), 0);
-  const isBalanced = totalPercentage === 100;
+  const isBalanced = parseFloat(totalPercentage.toFixed(2)) === 100;
 
   const handlePercentageChange = (id, newVal) => {
     let val = parseFloat(newVal);
@@ -465,7 +465,7 @@ const BudgetPage = () => {
   const chartData = useMemo(() => {
     return categories.map(c => ({
       name: c.name,
-      value: parseFloat(c.percentage) || 0,
+      value: parseFloat((parseFloat(c.percentage) || 0).toFixed(2)),
       color: c.color,
       amount: (income * (parseFloat(c.percentage) || 0)) / 100
     })).filter(c => c.value > 0);
@@ -476,9 +476,7 @@ const BudgetPage = () => {
       {/* Sidebar */}
       <aside className={`fixed md:sticky top-0 left-0 h-screen w-64 bg-white border-r border-borderLight flex flex-col z-30 transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
         <div className="flex items-center gap-3 px-6 py-6 border-b border-borderLight h-16 box-border cursor-pointer" onClick={() => navigate('/dashboard')}>
-          <div className="w-8 h-8 rounded bg-darkNavy flex items-center justify-center relative overflow-hidden">
-            <span className="text-primary font-bold text-lg z-10">₹</span>
-          </div>
+          <img src="/logo.png" alt="Finance Fox Logo" className="w-8 h-8 object-contain" />
           <div className="flex flex-col">
             <span className="text-primary text-[10px] font-bold leading-tight tracking-wider uppercase">Finance</span>
             <span className="text-darkNavy font-bold leading-tight">FOX</span>
@@ -589,8 +587,8 @@ const BudgetPage = () => {
               <AlertCircle size={20} className="shrink-0 mt-0.5 sm:mt-0" />
               <p className="text-sm font-medium">
                 {totalPercentage > 100 
-                  ? `Warning: You have allocated ${parseFloat(totalPercentage.toFixed(4))}%. Please reduce by ${parseFloat((totalPercentage - 100).toFixed(4))}% (₹${(((totalPercentage - 100) / 100) * income).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}) to balance your budget.`
-                  : `Notice: You have only allocated ${parseFloat(totalPercentage.toFixed(4))}%. You still have ${parseFloat((100 - totalPercentage).toFixed(4))}% (₹${(((100 - totalPercentage) / 100) * income).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}) left to allocate.`
+                  ? `Warning: You have allocated ${parseFloat(totalPercentage.toFixed(2))}%. Please reduce by ${parseFloat((totalPercentage - 100).toFixed(2))}% (₹${(((totalPercentage - 100) / 100) * income).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}) to balance your budget.`
+                  : `Notice: You have only allocated ${parseFloat(totalPercentage.toFixed(2))}%. You still have ${parseFloat((100 - totalPercentage).toFixed(2))}% (₹${(((100 - totalPercentage) / 100) * income).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}) left to allocate.`
                 }
               </p>
             </div>

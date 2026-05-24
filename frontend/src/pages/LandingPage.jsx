@@ -12,9 +12,7 @@ const LandingPage = () => {
 
       <nav className="w-full px-6 py-6 md:px-12 flex justify-between items-center z-10">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center">
-            <BarChart3 size={20} className="text-white" />
-          </div>
+          <img src="/logo.png" alt="Finance Fox Logo" className="w-8 h-8 object-contain" />
           <span className="text-xl font-bold tracking-tight text-white">Finance Fox</span>
         </div>
         <div className="flex gap-4">
