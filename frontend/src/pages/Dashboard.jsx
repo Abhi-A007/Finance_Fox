@@ -108,7 +108,9 @@ const Dashboard = () => {
   ];
 
   useEffect(() => {
-    chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (chatHistory.length > 1 || aiTyping) {
+      chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
   }, [chatHistory, aiTyping]);
 
   const toggleReasoning = (index) => {
