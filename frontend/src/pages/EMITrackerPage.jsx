@@ -227,7 +227,7 @@ const EMITrackerPage = () => {
     if (!name.trim()) return showToast('Please enter a loan/EMI name.', 'error');
     if (!lender.trim()) return showToast('Please enter the lender name.', 'error');
     if (!amount || Number(amount) <= 0) return showToast('Enter a valid monthly EMI amount.', 'error');
-    if (!dueDate || Number(dueDate) < 1 || Number(dueDate) > 31) return showToast('Due date must be between 1 and 31.', 'error');
+    if (!dueDate || Number(dueDate) < 1 || Number(dueDate) > 31) return showToast('EMI payment date must be between 1 and 31.', 'error');
     if (!totalTenure || Number(totalTenure) <= 0) return showToast('Total tenure must be greater than 0 months.', 'error');
 
     const pTenure = Number(paidTenure) || 0;
@@ -312,7 +312,7 @@ const EMITrackerPage = () => {
   const totalPaidTenureMonths = emis.reduce((sum, e) => sum + Number(e.paidTenure), 0);
   const aggregateProgress = totalTenureMonths > 0 ? (totalPaidTenureMonths / totalTenureMonths) * 100 : 0;
 
-  // Compile notifications/alerts
+  // Compile notifications/alerts (Persistent reminder for all unpaid EMIs in the current month)
   const alertList = activeEMIs.map(e => {
     const paid = isPaidThisMonth(e, now);
     if (paid) return null;
@@ -328,18 +328,17 @@ const EMITrackerPage = () => {
       return {
         id: e.id,
         type: 'danger',
-        message: `Overdue Warning: ${e.name} EMI of ${fmt(e.amount)} is overdue! Due date was ${currentMonthName} ${dueDay}.`,
+        message: `Overdue Reminder: ${e.name} EMI of ${fmt(e.amount)} was scheduled for payment on ${currentMonthName} ${dueDay} but is unpaid. Please pay and toggle as Paid.`,
         emi: e
       };
-    } else if (diff <= 7) {
+    } else {
       return {
         id: e.id,
         type: 'warning',
-        message: `${e.name} EMI of ${fmt(e.amount)} is due soon on ${currentMonthName} ${dueDay} (in ${diff === 0 ? 'today' : diff === 1 ? '1 day' : diff + ' days'}).`,
+        message: `Upcoming EMI Reminder: ${e.name} EMI of ${fmt(e.amount)} is scheduled for payment on ${currentMonthName} ${dueDay} (in ${diff === 0 ? 'today' : diff === 1 ? '1 day' : diff + ' days'}).`,
         emi: e
       };
     }
-    return null;
   }).filter(Boolean);
 
   return (
@@ -631,7 +630,7 @@ const EMITrackerPage = () => {
                             </div>
                             <div>
                               <h4 className="font-extrabold text-darkNavy leading-tight">{emi.name}</h4>
-                              <p className="text-xs text-textMuted font-medium">{emi.lender} · Due day: {emi.dueDate}th</p>
+                              <p className="text-xs text-textMuted font-medium">{emi.lender} · EMI Payment Date: {emi.dueDate}th</p>
                             </div>
                           </div>
 
@@ -641,20 +640,12 @@ const EMITrackerPage = () => {
                                 <CheckCircle2 size={12} /> Completed 🎉
                               </span>
                             ) : paidThisMonth ? (
-                              <span className="text-[11px] font-bold text-primary bg-primaryLight px-3 py-1 rounded-full flex items-center gap-1">
+                              <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-150 px-3 py-1 rounded-full flex items-center gap-1">
                                 <CheckCircle2 size={12} /> Paid for {now.toLocaleString('en-IN', { month: 'short' })} ✓
                               </span>
-                            ) : isOverdue ? (
-                              <span className="text-[11px] font-bold text-rose-700 bg-rose-100 px-3 py-1 rounded-full flex items-center gap-1">
-                                <AlertCircle size={12} /> Overdue ⚠️
-                              </span>
-                            ) : isDueSoon ? (
-                              <span className="text-[11px] font-bold text-amber-700 bg-amber-100 px-3 py-1 rounded-full">
-                                Due in {dueDay - now.getDate()} days
-                              </span>
                             ) : (
-                              <span className="text-[11px] font-bold text-textMuted bg-gray-100 px-3 py-1 rounded-full">
-                                Unpaid
+                              <span className="text-[11px] font-bold text-rose-700 bg-rose-50 border border-rose-200 px-3 py-1 rounded-full flex items-center gap-1">
+                                <AlertCircle size={12} /> Unpaid ⚠️
                               </span>
                             )}
                           </div>
@@ -668,20 +659,22 @@ const EMITrackerPage = () => {
                           </div>
 
                           <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => handlePayEMI(emi.id)}
-                              disabled={isCompleted}
-                              className="px-4 py-2.5 bg-primary text-white rounded-xl text-xs font-extrabold shadow-sm hover:bg-orange-600 transition-all flex items-center gap-1.5 hover:scale-102 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                            >
-                              <CheckCircle2 size={15} /> Pay Next EMI
-                            </button>
-                            <button
-                              onClick={() => handleRollbackEMI(emi.id)}
-                              disabled={Number(emi.paidTenure) === 0}
-                              className="px-4 py-2.5 bg-white border border-gray-200 text-textDark rounded-xl text-xs font-extrabold shadow-sm hover:bg-gray-50 transition-all flex items-center gap-1.5 hover:scale-102 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                            >
-                              <Undo size={15} className="text-textMuted" /> Rollback
-                            </button>
+                            {paidThisMonth ? (
+                              <button
+                                onClick={() => handleRollbackEMI(emi.id)}
+                                className="px-4 py-2.5 bg-slate-100 border border-slate-200 text-darkNavy rounded-xl text-xs font-extrabold shadow-sm hover:bg-slate-200 transition-all flex items-center gap-1.5 hover:scale-102"
+                              >
+                                <Undo size={15} className="text-textMuted" /> Mark as Unpaid
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => handlePayEMI(emi.id)}
+                                disabled={isCompleted}
+                                className="px-4 py-2.5 bg-primary text-white rounded-xl text-xs font-extrabold shadow-sm hover:bg-orange-600 transition-all flex items-center gap-1.5 hover:scale-102 disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                <CheckCircle2 size={15} /> Mark as Paid
+                              </button>
+                            )}
                           </div>
                         </div>
 
@@ -820,7 +813,7 @@ const EMITrackerPage = () => {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-textMuted uppercase tracking-wider mb-1.5">Monthly Due Day</label>
+                    <label className="block text-xs font-bold text-textMuted uppercase tracking-wider mb-1.5">EMI Payment Date (Day of Month)</label>
                     <input
                       type="number"
                       value={dueDate}
@@ -828,7 +821,7 @@ const EMITrackerPage = () => {
                       max="31"
                       onChange={e => setDueDate(e.target.value)}
                       onWheel={e => e.target.blur()}
-                      placeholder="e.g. 5, 10"
+                      placeholder="e.g. 15"
                       className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-bold text-darkNavy focus:outline-none focus:ring-2 focus:ring-purple-600/20 focus:border-purple-600 transition-all placeholder:text-gray-400 placeholder:font-normal"
                       required
                     />

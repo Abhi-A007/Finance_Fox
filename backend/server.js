@@ -539,7 +539,7 @@ app.post("/api/ai/chat", authenticateToken, async (req, res) => {
     // 1. Fetch User Data
     const activeTemplate = await Template.findOne({ userId: req.user.id }).sort({ updatedAt: -1 });
     const income = activeTemplate ? activeTemplate.income : 60000;
-    
+
     const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
     const expenses = await Expense.find({
       userId: req.user.id,
@@ -559,7 +559,7 @@ app.post("/api/ai/chat", authenticateToken, async (req, res) => {
     let targetAmount = null;
 
     const lowerMessage = message.toLowerCase();
-    
+
     // Check for affordability
     const affordRegex = /(?:buy|afford|spend|purchase|cost|price)\s+.*?(\d[\d,]*\s*k?)/i;
     const affordMatch = lowerMessage.match(affordRegex);
@@ -586,7 +586,7 @@ app.post("/api/ai/chat", authenticateToken, async (req, res) => {
       totalEMIs,
       netSavings
     };
-    
+
     let structuredAdvice = [];
 
     if (intent === "affordability") {
@@ -601,7 +601,7 @@ app.post("/api/ai/chat", authenticateToken, async (req, res) => {
       } else {
         calculations.monthsNeeded = Number((targetAmount / netSavings).toFixed(2));
         calculations.affordable = targetAmount <= netSavings;
-        
+
         if (calculations.affordable) {
           structuredAdvice.push({
             type: "success",
@@ -622,7 +622,7 @@ app.post("/api/ai/chat", authenticateToken, async (req, res) => {
     } else if (intent === "savings_rate") {
       const savingsRate = income > 0 ? (netSavings / income) * 100 : 0;
       calculations.savingsRate = Number(savingsRate.toFixed(2));
-      
+
       if (savingsRate >= 20) {
         calculations.rating = "Excellent";
         structuredAdvice.push({
@@ -651,7 +651,7 @@ app.post("/api/ai/chat", authenticateToken, async (req, res) => {
     } else if (intent === "budget_status") {
       const categoriesBreakdown = [];
       let overBudgetCategories = 0;
-      
+
       if (activeTemplate && activeTemplate.categories) {
         activeTemplate.categories.forEach(cat => {
           const catBudget = (income * cat.percentage) / 100;
@@ -665,7 +665,7 @@ app.post("/api/ai/chat", authenticateToken, async (req, res) => {
             overBudget: catSpent > catBudget
           };
           categoriesBreakdown.push(status);
-          
+
           if (status.overBudget) {
             overBudgetCategories++;
             structuredAdvice.push({
@@ -727,7 +727,7 @@ app.post("/api/ai/chat", authenticateToken, async (req, res) => {
       // Gemini API real call using built-in fetch
       try {
         const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
-        
+
         let contextPrompt = `You are Finance Fox AI, a financial assistant. The user asked: "${message}".
 Here is their verified financial data from their profile:
 - Monthly Income: ₹${income}
@@ -797,7 +797,7 @@ Write a concise, professional explanation (maximum 2-3 short paragraphs) answeri
 
 I highly recommend reviewing your discretionary expense categories (like dining out or shopping) or restructuring your EMIs before making any new purchases.`;
         } else {
-          const affordabilityText = calculations.affordable 
+          const affordabilityText = calculations.affordable
             ? `Yes, you can afford to buy this item for ₹${targetAmount.toLocaleString()} immediately! Your net monthly savings are ₹${netSavings.toLocaleString()} (Income ₹${income.toLocaleString()} - Expenses ₹${totalExpenses.toLocaleString()} - EMIs ₹${totalEMIs.toLocaleString()}), which is greater than the cost of the item. This purchase will leave you with a surplus of ₹${netSavings - targetAmount} in savings this month.`
             : `You cannot afford this item immediately using this month's savings, but you can afford it by saving for **${calculations.monthsNeeded} months**. Your current net monthly savings are ₹${netSavings.toLocaleString()}. If you allocate your entire surplus, you will reach the target of ₹${targetAmount.toLocaleString()} in approximately ${Math.ceil(calculations.monthsNeeded)} months.`;
 
@@ -814,7 +814,7 @@ Here is the rating: **${calculations.rating}**. Financial planners generally rec
       } else if (intent === "budget_status") {
         const overList = calculations.categories.filter(c => c.overBudget);
         const nearList = calculations.categories.filter(c => !c.overBudget && c.percentUsed >= 90);
-        
+
         let budgetDetails = `Against your monthly income of ₹${income.toLocaleString()}, you have spent a total of **₹${totalExpenses.toLocaleString()}** this month. 
 
 `;
