@@ -2,7 +2,8 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
 import { 
-  List, Bell, Plus, Trash2, Home, Heart, Briefcase, TrendingUp, IndianRupee, AlertCircle, Edit2, Check, Save, X
+  List, Bell, Plus, Trash2, Home, Heart, Briefcase, TrendingUp, IndianRupee, AlertCircle, Edit2, Check, Save, X,
+  FileText, Sparkles, PieChart as PieChartIcon, Calculator
 } from 'lucide-react';
 
 const SidebarItem = ({ icon: Icon, label, active, dotColor, onClick }) => (
@@ -487,20 +488,20 @@ const BudgetPage = () => {
           <div className="mb-8">
             <h4 className="text-[10px] font-bold text-textMuted uppercase tracking-wider mb-3 px-2">Main</h4>
             <div className="space-y-1">
-              <SidebarItem dotColor="bg-gray-200" label="Overview" onClick={() => navigate('/dashboard')} />
-              <SidebarItem dotColor="bg-gray-200" label="Expenses" onClick={() => navigate('/expenses')} />
-              <SidebarItem dotColor="bg-gray-200" label="Expense History" onClick={() => navigate('/expense-history')} />
-              <SidebarItem dotColor="bg-gray-200" label="AI Assistant" onClick={() => navigate('/ai-assistant')} />
-              <SidebarItem dotColor="bg-primary" label="Budget" active />
-              <SidebarItem dotColor="bg-gray-200" label="Stocks" onClick={() => navigate('/stocks')} />
+              <SidebarItem dotColor="bg-gray-200" label="Overview" onClick={() => navigate('/dashboard')} icon={Home} />
+              <SidebarItem dotColor="bg-gray-200" label="Expenses" onClick={() => navigate('/expenses')} icon={List} />
+              <SidebarItem dotColor="bg-gray-200" label="Expense History" onClick={() => navigate('/expense-history')} icon={FileText} />
+              <SidebarItem dotColor="bg-gray-200" label="AI Assistant" onClick={() => navigate('/ai-assistant')} icon={Sparkles} />
+              <SidebarItem dotColor="bg-primary" label="Budget" active icon={PieChartIcon} />
+              <SidebarItem dotColor="bg-gray-200" label="Stocks" onClick={() => navigate('/stocks')} icon={TrendingUp} />
             </div>
           </div>
 
           <div>
             <h4 className="text-[10px] font-bold text-textMuted uppercase tracking-wider mb-3 px-2">Tools</h4>
             <div className="space-y-1">
-              <SidebarItem dotColor="bg-gray-200" label="Calculators" onClick={() => navigate('/calculators')} />
-              <SidebarItem dotColor="bg-gray-200" label="EMI Tracker" onClick={() => navigate('/emitracker')} />
+              <SidebarItem dotColor="bg-gray-200" label="Calculators" onClick={() => navigate('/calculators')} icon={Calculator} />
+              <SidebarItem dotColor="bg-gray-200" label="EMI Tracker" onClick={() => navigate('/emitracker')} icon={AlertCircle} />
             </div>
           </div>
         </div>

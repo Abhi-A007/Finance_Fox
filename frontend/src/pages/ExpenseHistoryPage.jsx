@@ -12,7 +12,12 @@ import {
   TrendingUp,
   Sparkles,
   ArrowLeft,
-  CalendarDays
+  CalendarDays,
+  Home,
+  FileText,
+  PieChart,
+  Calculator,
+  AlertCircle
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -387,20 +392,20 @@ const ExpenseHistoryPage = () => {
           <div className="mb-8">
             <h4 className="text-[10px] font-bold text-textMuted uppercase tracking-wider mb-3 px-2">Main</h4>
             <div className="space-y-1">
-              <SidebarItem dotColor="bg-gray-200" label="Overview" onClick={() => navigate('/dashboard')} />
-              <SidebarItem dotColor="bg-gray-200" label="Expenses" onClick={() => navigate('/expenses')} />
-              <SidebarItem dotColor="bg-primary" label="Expense History" active />
-              <SidebarItem dotColor="bg-gray-200" label="AI Assistant" onClick={() => navigate('/ai-assistant')} />
-              <SidebarItem dotColor="bg-gray-200" label="Budget" onClick={() => navigate('/budget')} />
-              <SidebarItem dotColor="bg-gray-200" label="Stocks" onClick={() => navigate('/stocks')} />
+              <SidebarItem dotColor="bg-gray-200" label="Overview" onClick={() => navigate('/dashboard')} icon={Home} />
+              <SidebarItem dotColor="bg-gray-200" label="Expenses" onClick={() => navigate('/expenses')} icon={List} />
+              <SidebarItem dotColor="bg-primary" label="Expense History" active icon={FileText} />
+              <SidebarItem dotColor="bg-gray-200" label="AI Assistant" onClick={() => navigate('/ai-assistant')} icon={Sparkles} />
+              <SidebarItem dotColor="bg-gray-200" label="Budget" onClick={() => navigate('/budget')} icon={PieChart} />
+              <SidebarItem dotColor="bg-gray-200" label="Stocks" onClick={() => navigate('/stocks')} icon={TrendingUp} />
             </div>
           </div>
 
           <div>
             <h4 className="text-[10px] font-bold text-textMuted uppercase tracking-wider mb-3 px-2">Tools</h4>
             <div className="space-y-1">
-              <SidebarItem dotColor="bg-gray-200" label="Calculators" onClick={() => navigate('/calculators')} />
-              <SidebarItem dotColor="bg-gray-200" label="EMI Tracker" onClick={() => navigate('/emitracker')} />
+              <SidebarItem dotColor="bg-gray-200" label="Calculators" onClick={() => navigate('/calculators')} icon={Calculator} />
+              <SidebarItem dotColor="bg-gray-200" label="EMI Tracker" onClick={() => navigate('/emitracker')} icon={AlertCircle} />
             </div>
           </div>
         </div>

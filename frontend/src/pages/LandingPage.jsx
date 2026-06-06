@@ -56,7 +56,7 @@ const LandingPage = () => {
             <div className="flex flex-col sm:flex-row gap-4 mb-12 w-full sm:w-auto">
               <Link to="/signup" className="w-full sm:w-auto">
                 <Button size="lg" className="w-full gap-2 shadow-xl shadow-primary/30 hover:scale-105 transition-all">
-                  Start Free <ArrowRight size={18} />
+                  Get Started <ArrowRight size={18} />
                 </Button>
               </Link>
             </div>
@@ -275,29 +275,6 @@ const LandingPage = () => {
           </div>
         </div>
 
-        {/* Social Proof Stats Section */}
-        <div className="mt-28 md:mt-36 mb-24 px-6 max-w-6xl mx-auto w-full text-center">
-          <h3 className="text-xs uppercase font-extrabold tracking-widest text-textMuted mb-12">
-            Trusted by growing professionals
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
-            {[
-              { value: "₹10Cr+", label: "Transactions Managed" },
-              { value: "50,000+", label: "Active Users" },
-              { value: "99.9%", label: "Uptime" },
-              { value: "4.9★", label: "User Rating" }
-            ].map((stat, idx) => (
-              <div key={idx} className="flex flex-col items-center">
-                <span className="text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400 font-mono mb-2">
-                  {stat.value}
-                </span>
-                <span className="text-xs md:text-sm text-textMuted font-bold uppercase tracking-wider">
-                  {stat.label}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
       </main>
 
       {/* Footer */}
